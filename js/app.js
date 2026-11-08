@@ -385,7 +385,16 @@
     biaya: R.KELAS_BIAYA.map(function (k) { return { id: k.id, label: k.label, n: DALAM.filter(function (d) { return R.kelasBiaya(d.biaya_rp) === k.id; }).length }; }),
     rating: R.KELAS_RATING.map(function (k) { return { id: k.id, label: k.label, n: DALAM.filter(function (d) { return R.kelasRating(d.rating) === k.id; }).length }; })
   };
-  S.pilih = { kat: new Set(KAT), biaya: new Set(GRUP.biaya.map(function (o) { return o.id; })), rating: new Set(GRUP.rating.map(function (o) { return o.id; })) };
+  // Anggaran maksimum & rating minimum: satu pilihan saja (pilihan ganda hanya untuk jenis wisata)
+  var ANG_OPTS = [{ v: 0, label: 'Gratis', sub: 'Hanya tiket Rp0' }, { v: 10000, label: 'Rp10.000', sub: 'Hemat' }, { v: 25000, label: 'Rp25.000', sub: 'Menengah' },
+    { v: 50000, label: 'Rp50.000', sub: 'Leluasa' }, { v: 100000, label: 'Rp100.000', sub: 'Termasuk sebagian paket' }, { v: null, label: 'Tidak dibatasi', sub: 'Tanpa batas biaya' }];
+  var RAT_OPTS = [{ v: 4.5, label: '★ 4,5+', sub: 'Istimewa' }, { v: 4, label: '★ 4,0+', sub: 'Sangat baik' }, { v: 3.5, label: '★ 3,5+', sub: 'Baik' },
+    { v: 3, label: '★ 3,0+', sub: 'Cukup' }, { v: 0, label: 'Tidak dibatasi', sub: 'Termasuk yang belum dinilai' }];
+  function nAng(v) { return DALAM.filter(function (d) { return v == null || d.biaya_rp <= v; }).length; }
+  function nRat(v) { return DALAM.filter(function (d) { return v === 0 || (d.rating != null && d.rating >= v); }).length; }
+  function teksAng(v) { return v == null ? 'Tidak dibatasi' : v === 0 ? 'Hanya destinasi gratis' : 'Maks. ' + rp(v) + ' per orang'; }
+  function teksRat(v) { return v > 0 ? '★ ' + num(v, 1) + ' ke atas' : 'Tidak dibatasi'; }
+  S.pilih = { kat: new Set(KAT), ang: null, rmin: 0 };
   function teksPilihan(key, set) {
     var g = GRUP[key];
     if (!set.size) return 'Belum dipilih';
@@ -408,7 +417,17 @@
       });
     });
   }
-  function renderSemuaGrupManual() { renderGrupManual('kat', 'rKat'); renderGrupManual('biaya', 'rBiaya'); renderGrupManual('rating', 'rRating'); }
+  // satu pilihan (berperilaku seperti tombol radio)
+  function renderSatuManual(boxId, opts, key, nFn) {
+    $(boxId).innerHTML = opts.map(function (o, i) {
+      var on = S.pilih[key] === o.v;
+      return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-i="' + i + '" aria-pressed="' + on + '">' + esc(o.label) + ' <span class="n">' + nFn(o.v) + '</span></button>';
+    }).join('');
+    $(boxId).querySelectorAll('.chip').forEach(function (b) {
+      b.addEventListener('click', function () { S.pilih[key] = opts[+b.dataset.i].v; renderSatuManual(boxId, opts, key, nFn); renderKriteriaCard(); });
+    });
+  }
+  function renderSemuaGrupManual() { renderGrupManual('kat', 'rKat'); renderSatuManual('rBiaya', ANG_OPTS, 'ang', nAng); renderSatuManual('rRating', RAT_OPTS, 'rmin', nRat); }
   renderSemuaGrupManual();
   function buildSliders() {
     $('sliders').innerHTML = R.KRITERIA.map(function (k, j) {
@@ -463,12 +482,9 @@
     var P = S.pilih, jamFree = $('jamFree').checked, jam = parseFloat($('jam').value);
     if (!jamFree && !(jam > 0)) throw new Error('Isi waktu tersedia (jam) dengan angka lebih dari 0 atau centang "Tidak dibatasi".');
     if (!P.kat.size) throw new Error('Pilih minimal satu jenis wisata.');
-    if (!P.biaya.size) throw new Error('Pilih minimal satu kelas biaya.');
-    if (!P.rating.size) throw new Error('Pilih minimal satu kelas rating.');
-    var semua = function (key) { return S.pilih[key].size === GRUP[key].length; };
     return {
-      kategori: semua('kat') ? 'semua' : Array.from(P.kat), jamMaks: jamFree ? null : jam, anggaran: null,
-      kelasBiaya: semua('biaya') ? null : Array.from(P.biaya), kelasRating: semua('rating') ? null : Array.from(P.rating), ratingMin: 0,
+      kategori: P.kat.size === KAT.length ? 'semua' : Array.from(P.kat), jamMaks: jamFree ? null : jam, anggaran: P.ang,
+      kelasBiaya: null, kelasRating: null, ratingMin: P.rmin,
       sertakanLuar: $('sertakanLuar').checked, pulang: $('pulang').checked,
       maksPemberhentian: +$('maksStop').value, kandidatRute: 10
     };
@@ -953,12 +969,12 @@
       ['Lokasi awal', o.origin ? o.origin.label : 'belum ditentukan'],
       ['Jenis wisata', teksPilihan('kat', o.kat)],
       ['Waktu', o.jam == null ? 'Tidak dibatasi' : num(o.jam, o.jam % 1 ? 1 : 0) + ' jam (termasuk perjalanan)'],
-      ['Biaya', teksPilihan('biaya', o.biaya)],
-      ['Rating', teksPilihan('rating', o.rating)]
+      ['Anggaran', teksAng(o.ang)],
+      ['Rating minimum', teksRat(o.rmin)]
     ];
   }
   function renderKriteriaCard() {
-    var o = { origin: S.origin, kat: S.pilih.kat, jam: $('jamFree').checked ? null : parseFloat($('jam').value), biaya: S.pilih.biaya, rating: S.pilih.rating };
+    var o = { origin: S.origin, kat: S.pilih.kat, jam: $('jamFree').checked ? null : parseFloat($('jam').value), ang: S.pilih.ang, rmin: S.pilih.rmin };
     $('kriteriaList').innerHTML = kriteriaText(o).map(function (r) { return '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('');
   }
 
@@ -967,8 +983,8 @@
     ['Dari mana Anda akan memulai perjalanan?', 'Gunakan lokasi Anda saat ini, klik titik pada peta, atau cari nama tempat.'],
     ['Jenis wisata apa yang ingin Anda kunjungi?', 'Boleh memilih lebih dari satu, atau "Pilih semua".'],
     ['Berapa lama waktu yang Anda miliki untuk berwisata termasuk perjalanan?', 'Waktu ini mencakup perjalanan dan lama kunjungan di setiap destinasi.'],
-    ['Berapa anggaran maksimum yang ingin Anda keluarkan?', 'Pilih satu atau beberapa kelas biaya tiket masuk per orang, atau "Pilih semua".'],
-    ['Berapa rating minimum destinasi wisata yang Anda inginkan?', 'Pilih satu atau beberapa kelas rating (Google Maps, skala 1–5), atau "Pilih semua".'],
+    ['Berapa anggaran maksimum yang ingin Anda keluarkan?', 'Pilih satu: batas biaya tiket masuk per orang.'],
+    ['Berapa rating minimum destinasi wisata yang Anda inginkan?', 'Pilih satu: rating rata-rata pengunjung di Google Maps (skala 1–5).'],
     ['Periksa kembali pilihan Anda', 'Jika sudah sesuai, tekan "Tampilkan Rekomendasi". Pilihan dapat diubah kapan saja melalui tombol "Ubah preferensi".']
   ];
   var KAT_DESC = {
@@ -978,7 +994,7 @@
   };
   var SUB_BIAYA = { gratis: 'Tanpa tiket', b10: 'Hemat', b25: 'Menengah', b50: 'Leluasa', b100: 'Termasuk sebagian paket', b100p: 'Penginapan & paket' };
   var SUB_RATING = { r45: 'Istimewa', r40: 'Sangat baik', r35: 'Baik', r30: 'Cukup', r0: 'Kurang', rna: 'Destinasi baru/kurang dikenal' };
-  var W = { step: 0, origin: null, jam: 6, kat: new Set(), biaya: new Set(), rating: new Set() };
+  var W = { step: 0, origin: null, jam: 6, kat: new Set(), ang: 50000, rmin: 0 };
   var wzMap = null, wzMarker = null;
   var JAM_OPTS = [['2 jam', 'Singgah singkat', 2], ['4 jam', 'Setengah hari', 4], ['6 jam', 'Sebagian besar hari', 6], ['8 jam', 'Seharian penuh', 8], ['Tidak dibatasi', 'Tanpa batas waktu', null]];
   function wzJam() {
@@ -1011,19 +1027,35 @@
       });
     });
   }
+  // satu pilihan pada panduan (anggaran & rating)
+  function wzSatu(boxId, opts, key, nFn) {
+    var box = $(boxId);
+    box.innerHTML = opts.map(function (o, i) {
+      return '<button type="button" class="wz-opt" data-i="' + i + '"><b>' + esc(o.label) + '</b><small>' + o.sub + ' · ' + nFn(o.v) + ' destinasi</small></button>';
+    }).join('');
+    box.querySelectorAll('.wz-opt').forEach(function (b) {
+      b.addEventListener('click', function () { W[key] = opts[+b.dataset.i].v; wzMark(); wzUpdateNav(); });
+    });
+  }
   function wzBuild() {
     $('wzFacts').innerHTML = '<li><b>' + DALAM.length + '</b><span>Destinasi</span></li><li><b>3</b><span>Kapanewon</span></li><li><b>5</b><span>Kategori</span></li>';
     wzMulti('wzKat', 'kat', true);
     wzJam();
-    wzMulti('wzAng', 'biaya', false);
-    wzMulti('wzRating', 'rating', false);
+    wzSatu('wzAng', ANG_OPTS, 'ang', nAng);
+    wzSatu('wzRating', RAT_OPTS, 'rmin', nRat);
     $('wzJamCustom').addEventListener('input', function (e) { var v = parseFloat(e.target.value); if (v > 0) W.jam = v; wzMark(); wzUpdateNav(); });
   }
   function wzMark() {
-    [['wzKat', 'kat'], ['wzAng', 'biaya'], ['wzRating', 'rating']].forEach(function (p) {
+    [['wzKat', 'kat']].forEach(function (p) {
       var set = W[p[1]], penuh = set.size === GRUP[p[1]].length;
       $(p[0]).querySelectorAll('button').forEach(function (b) {
         var on = b.dataset.all ? penuh : set.has(b.dataset.id);
+        b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+      });
+    });
+    [['wzAng', ANG_OPTS, 'ang'], ['wzRating', RAT_OPTS, 'rmin']].forEach(function (g) {
+      $(g[0]).querySelectorAll('.wz-opt').forEach(function (b) {
+        var on = g[1][+b.dataset.i].v === W[g[2]];
         b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
       });
     });
@@ -1063,8 +1095,6 @@
     if (W.step === 0) return !!W.origin;
     if (W.step === 1) return W.kat.size > 0;
     if (W.step === 2) return W.jam === null || W.jam > 0;
-    if (W.step === 3) return W.biaya.size > 0;
-    if (W.step === 4) return W.rating.size > 0;
     return true;
   }
   function wzUpdateNav() {
@@ -1090,7 +1120,7 @@
   }
   function openWizard() {
     if (S.origin) W.origin = Object.assign({}, S.origin);
-    if (S.sudahCari) { W.kat = new Set(S.pilih.kat); W.biaya = new Set(S.pilih.biaya); W.rating = new Set(S.pilih.rating); }
+    if (S.sudahCari) { W.kat = new Set(S.pilih.kat); W.ang = S.pilih.ang; W.rmin = S.pilih.rmin; }
     $('wizard').hidden = false;
     wzGo(0);
   }
@@ -1098,7 +1128,7 @@
   function wzFinish() {
     // terapkan jawaban ke formulir rekomendasi, lalu jalankan perhitungan
     setOrigin(W.origin.lat, W.origin.lon, W.origin.label);
-    S.pilih = { kat: new Set(W.kat), biaya: new Set(W.biaya), rating: new Set(W.rating) };
+    S.pilih = { kat: new Set(W.kat), ang: W.ang, rmin: W.rmin };
     S.sudahCari = true;
     renderSemuaGrupManual();
     $('jamFree').checked = W.jam === null; $('jam').disabled = W.jam === null; if (W.jam !== null) $('jam').value = W.jam;
