@@ -1,0 +1,288 @@
+{
+ "tanggal": "2026-11-08",
+ "peramban": "Microsoft Edge 157 (headless, Windows 11), viewport 1440x900",
+ "ringkas": "LULUS 35/35",
+ "galat_halaman": [],
+ "uji": [
+  {
+   "No": 1,
+   "Fitur": "Panduan awal",
+   "Skenario": "Membuka halaman utama",
+   "Harapan": "Panduan tampil lebih dulu dengan pertanyaan 1; tombol \"Lanjut\" nonaktif sebelum lokasi diisi",
+   "Hasil": "Panduan terbuka; \"Dari mana Anda akan memulai perjalanan?\"; Lanjut nonaktif = true",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 2,
+   "Fitur": "Validasi input",
+   "Skenario": "Klik \"Cari Rekomendasi\" (formulir manual) tanpa lokasi awal",
+   "Harapan": "Sistem menolak dan meminta lokasi awal",
+   "Hasil": "Pesan: \"Tentukan lokasi awal terlebih dahulu (langkah 1).\"",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 3,
+   "Fitur": "Panduan – lokasi",
+   "Skenario": "Klik titik pada peta mini panduan",
+   "Harapan": "Titik awal terisi dan tombol \"Lanjut\" aktif",
+   "Hasil": "Titik awal: Titik pilihan pada peta (-7.69943, 110.18978)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 4,
+   "Fitur": "Panduan – lokasi",
+   "Skenario": "Klik pilihan cepat \"Gerbosari\"",
+   "Harapan": "Titik awal = Gerbosari",
+   "Hasil": "Titik awal: Gerbosari, pusat Kapanewon Samigaluh (toponimi RBI) (-7.66988, 110.16625)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 5,
+   "Fitur": "Panduan – urutan pertanyaan",
+   "Skenario": "Tekan \"Lanjut\" pada setiap langkah",
+   "Harapan": "Pertanyaan 2–5 tampil berurutan dengan teks yang ditetapkan",
+   "Hasil": "2) Jenis wisata apa yang ingin Anda kunjungi? | 3) Berapa lama waktu yang Anda miliki untuk berwisata termasuk perjalanan? | 4) Berapa anggaran maksimum yang ingin Anda keluarkan? | 5) Berapa rating minimum destinasi wisata yang Anda inginkan?; Lanjut terkunci sebelum memilih = true/true/true",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 6,
+   "Fitur": "Panduan – pilihan ganda",
+   "Skenario": "Pada pertanyaan rating, klik \"Pilih semua\" lalu klik lagi",
+   "Harapan": "Semua kelas tercentang, lalu semua terhapus dan tombol Lanjut terkunci",
+   "Hasil": "Pilih semua: 6/6; dikosongkan: 0 (Lanjut terkunci); pilihan semula dipulihkan",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 7,
+   "Fitur": "Panduan – ringkasan",
+   "Skenario": "Tekan \"Lanjut\" setelah pertanyaan 5",
+   "Harapan": "Ringkasan memuat 5 jawaban (termasuk pilihan ganda) beserta tautan \"ubah\"",
+   "Hasil": "5 jawaban: 1. Lokasi awal Gerbosari, pusat Kapanewon Samigaluh (toponimi RBI)2. Jenis wisata Wisata Alam, Religi dan Budaya3. Waktu 4 jam (termasuk perjalanan)4. Biaya Gratis, Rp1–1",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 8,
+   "Fitur": "Panduan – hasil",
+   "Skenario": "Tekan \"Tampilkan Rekomendasi\"",
+   "Harapan": "Panduan tertutup; semua hasil sesuai pilihan (Alam/Religi, biaya ≤ Rp10.000, rating ≥ 4,0)",
+   "Hasil": "10 hasil teratas, seluruhnya sesuai pilihan; 38 dari 70 destinasi dalam cakupan memenuhi batasan",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 9,
+   "Fitur": "Ubah preferensi",
+   "Skenario": "Klik tombol \"Ubah preferensi\" di header",
+   "Harapan": "Panduan terbuka kembali dengan titik awal tersimpan",
+   "Hasil": "Panduan terbuka, lokasi tersimpan; \"Lewati\" menutup panduan",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 10,
+   "Fitur": "Peta & data",
+   "Skenario": "Membuka halaman utama",
+   "Harapan": "Peta, batas 3 kapanewon, dan 70 destinasi dalam cakupan tampil",
+   "Hasil": "70 marker, 70 item daftar, 3 label kapanewon",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 11,
+   "Fitur": "Pencarian",
+   "Skenario": "Ketik \"mudal\" pada kolom cari",
+   "Harapan": "Hanya destinasi yang namanya memuat \"mudal\"",
+   "Hasil": "Ekowisata Sungai Mudal",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 12,
+   "Fitur": "Filter kategori",
+   "Skenario": "Klik chip \"Religi dan Budaya\"",
+   "Harapan": "Daftar & peta hanya menampilkan kategori Religi dan Budaya",
+   "Hasil": "8 item, 8 marker (setelah reset: 70)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 13,
+   "Fitur": "Filter kapanewon",
+   "Skenario": "Pilih kapanewon Girimulyo",
+   "Harapan": "Hanya destinasi di Girimulyo (19)",
+   "Hasil": "19 item, semua di Girimulyo",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 14,
+   "Fitur": "Objek sekitar",
+   "Skenario": "Centang \"Tampilkan objek di sekitar wilayah kajian\"",
+   "Harapan": "Objek di luar 3 kapanewon ikut tampil (83 total) dan diberi label",
+   "Hasil": "83 item, 13 berlabel \"luar cakupan\"",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 15,
+   "Fitur": "Detail destinasi",
+   "Skenario": "Klik destinasi pada daftar lalu tombol \"Detail\" pada pop-up",
+   "Harapan": "Jendela detail menampilkan deskripsi, lokasi, harga, jam, koordinat",
+   "Hasil": "Modal \"Agrowisata Kalisentul\" terbuka dengan atribut lengkap",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 16,
+   "Fitur": "Lapisan peta",
+   "Skenario": "Buka kontrol lapisan",
+   "Harapan": "Tersedia 3 peta dasar dan 6 lapisan tematik",
+   "Hasil": "3 peta dasar, 6 lapisan tematik",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 17,
+   "Fitur": "Lokasi awal",
+   "Skenario": "Formulir manual: mode \"Pilih pada peta\" lalu klik peta",
+   "Harapan": "Titik awal terisi koordinat hasil klik",
+   "Hasil": "Titik awal: Titik pilihan pada peta (-7.67425, 110.23244)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 18,
+   "Fitur": "Lokasi awal",
+   "Skenario": "Klik contoh \"Gerbosari\"",
+   "Harapan": "Titik awal = Gerbosari (-7,66988; 110,16625)",
+   "Hasil": "Titik awal: Gerbosari, pusat Kapanewon Samigaluh (toponimi RBI) (-7.66988, 110.16625)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 19,
+   "Fitur": "Rekomendasi SAW",
+   "Skenario": "Cari dengan semua kategori, 6 jam, Rp50.000",
+   "Harapan": "Peringkat tampil terurut menurun berdasarkan V; waktu tempuh dari OSRM",
+   "Hasil": "70 dari 70 destinasi dalam cakupan memenuhi batasan. Waktu tempuh: jaringan jalan OSRM. Top-10 terurut: true",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 20,
+   "Fitur": "Rute kunjungan",
+   "Skenario": "Buka sub-tab \"Rute kunjungan\"",
+   "Harapan": "Urutan kunjungan, waktu tiap ruas, total waktu ≤ 6 jam, garis rute pada peta",
+   "Hasil": "4 pemberhentian, total 5 j 15 mnt, 2 garis rute; tanpa tautan Google Maps",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 21,
+   "Fitur": "Petunjuk arah",
+   "Skenario": "Tunggu daftar petunjuk arah pada sub-tab Rute",
+   "Harapan": "Petunjuk belok-demi-belok berbahasa Indonesia per pemberhentian; tombol navigasi aktif",
+   "Hasil": "28 langkah dalam 4 bagian; contoh: \"Belok kanan\"",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 22,
+   "Fitur": "Navigasi di WebGIS",
+   "Skenario": "Klik \"Simulasi perjalanan\"",
+   "Harapan": "Banner navigasi menampilkan jarak ke manuver, petunjuk, dan sisa jarak; posisi bergerak di peta",
+   "Hasil": "\"860 m – Belok kanan\"; Menuju 1. AGROWISATA KRISAN GERBOSARI · sisa 0,9 km · total 12,0 km (±18 mnt)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 23,
+   "Fitur": "Navigasi di WebGIS",
+   "Skenario": "Klik \"Akhiri navigasi\"",
+   "Harapan": "Banner tertutup dan penanda posisi dihapus",
+   "Hasil": "Navigasi dihentikan",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 24,
+   "Fitur": "Penyaringan kategori",
+   "Skenario": "Formulir manual: pilih \"Religi dan Budaya\" + \"Agrowisata\" lalu cari",
+   "Harapan": "Semua hasil berkategori Religi dan Budaya atau Agrowisata",
+   "Hasil": "10 hasil: 6 Religi dan Budaya, 4 Agrowisata",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 25,
+   "Fitur": "Penyaringan biaya",
+   "Skenario": "Formulir manual: pilih kelas \"Gratis\" saja lalu cari",
+   "Harapan": "Hanya destinasi gratis",
+   "Hasil": "10 hasil teratas, seluruhnya gratis",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 26,
+   "Fitur": "Penyaringan rating",
+   "Skenario": "Formulir manual: pilih kelas \"★ 4,5 – 5,0\" saja lalu cari",
+   "Harapan": "Semua hasil memiliki rating ≥ 4,5",
+   "Hasil": "rating hasil: 4.8, 4.8, 4.8, 4.6, 4.8, 4.7, 4.7, 4.8, 4.5, 4.6",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 27,
+   "Fitur": "Validasi input",
+   "Skenario": "Kosongkan semua jenis wisata lalu cari",
+   "Harapan": "Sistem menolak: minimal satu jenis wisata",
+   "Hasil": "Pesan: \"Pilih minimal satu jenis wisata.\"",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 28,
+   "Fitur": "Penyaringan waktu",
+   "Skenario": "Waktu 1,5 jam lalu cari",
+   "Harapan": "Total waktu rute ≤ 1,5 jam",
+   "Hasil": "1 pemberhentian; Sisa waktu dari 1,5 jam: 28 mnt",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 29,
+   "Fitur": "Validasi input",
+   "Skenario": "Isi waktu 0 jam lalu cari",
+   "Harapan": "Sistem menolak dengan pesan kesalahan",
+   "Hasil": "Pesan: \"Isi waktu tersedia (jam) dengan angka lebih dari 0 atau centang \"Tidak dibatasi\".\"",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 30,
+   "Fitur": "Bobot kriteria",
+   "Skenario": "Pilih profil \"Hemat\"",
+   "Harapan": "Bobot berubah dan jumlahnya 100%",
+   "Hasil": "bobot: 15% / 55% / 15% / 15% (jumlah 100.0%)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 31,
+   "Fitur": "Transparansi SAW",
+   "Skenario": "Klik \"Lihat perhitungan SAW\"",
+   "Harapan": "Tabel matriks X, R, dan V seluruh alternatif tampil",
+   "Hasil": "70 baris perhitungan = 70 alternatif",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 32,
+   "Fitur": "Transparansi penyaringan",
+   "Skenario": "Klik \"Destinasi tersaring\"",
+   "Harapan": "Daftar destinasi yang dikeluarkan beserta alasannya",
+   "Hasil": "13 destinasi tersaring (83 − 70)",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 33,
+   "Fitur": "Kalkulator AHP",
+   "Skenario": "Matriks bawaan",
+   "Harapan": "Bobot, λmaks, CI, CR tampil; CR ≤ 0,10 → konsisten",
+   "Hasil": "λmaks 4,0458; CI 0,0153; RI 0,90; CR 0,0170 → konsisten; tombol \"Pakai\" aktif",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 34,
+   "Fitur": "Kalkulator AHP",
+   "Skenario": "Ubah perbandingan menjadi tidak konsisten (C1≫C2, C2≫C3, C3≫C1)",
+   "Harapan": "CR > 0,10 terdeteksi, tombol \"Pakai\" dinonaktifkan",
+   "Hasil": "CR terdeteksi tidak konsisten; tombol nonaktif = true",
+   "Status": "Sesuai"
+  },
+  {
+   "No": 35,
+   "Fitur": "Rekap & mutu data",
+   "Skenario": "Buka tab Data & Mutu",
+   "Harapan": "Tabel rekap kategori × kapanewon (total 70) dan ringkasan QA tampil",
+   "Hasil": "rekap total 70, 4 kartu QA, 83 baris atribut",
+   "Status": "Sesuai"
+  }
+ ]
+}

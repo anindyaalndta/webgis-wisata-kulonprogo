@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rekomendasi Destinasi · WebGIS Wisata Kulon Progo Utara</title>
+  <meta name="description" content="Rekomendasi destinasi dan rute wisata Kapanewon Girimulyo, Kalibawang, dan Samigaluh berbasis WebGIS (AHP-SAW).">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231f4d3a'/%3E%3Cpath d='M16 3.5c3.2 3.6 8.6 9 8.6 15.4 0 5.3-3.9 8.6-8.6 8.6s-8.6-3.3-8.6-8.6C7.4 12.5 12.8 7.1 16 3.5z' fill='%23d8b25e'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7"/><path class="gn" d="M16 3.5c3.2 3.6 8.6 9 8.6 15.4 0 5.3-3.9 8.6-8.6 8.6s-8.6-3.3-8.6-8.6C7.4 12.5 12.8 7.1 16 3.5z"/><path class="gl" d="M16 8v18M16 13l-4 4M16 13l4 4M16 18l-5 4.5M16 18l5 4.5"/></svg>
+      <div>
+        <h1>Rekomendasi Destinasi</h1>
+        <p>Wisata Girimulyo · Kalibawang · Samigaluh · Kulon Progo</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Menu utama">
+      <button role="tab" class="tab active" data-tab="rekom" aria-selected="true">Rekomendasi &amp; Rute</button>
+      <button role="tab" class="tab" data-tab="jelajah" aria-selected="false">Jelajah</button>
+      <button role="tab" class="tab" data-tab="metode" aria-selected="false">Metode AHP–SAW</button>
+      <button role="tab" class="tab" data-tab="data" aria-selected="false">Data &amp; Mutu</button>
+      <button role="tab" class="tab" data-tab="tentang" aria-selected="false">Tentang</button>
+    </nav>
+    <button type="button" class="btn-gold" id="btnWizard">Ubah preferensi</button>
+  </header>
+
+  <main class="layout">
+    <aside class="panel" id="panel">
+
+      <!-- ============================== JELAJAH -->
+      <section class="tabpane" id="tab-jelajah" role="tabpanel">
+        <div class="stats" id="stats"></div>
+        <label class="field">
+          <span class="sr-only">Cari destinasi</span>
+          <input type="search" id="q" placeholder="Cari nama destinasi atau kalurahan…" autocomplete="off">
+        </label>
+        <div class="chips" id="katChips" aria-label="Filter kategori"></div>
+        <div class="row">
+          <label class="field grow">
+            <span class="lbl">Kapanewon</span>
+            <select id="fKec">
+              <option value="semua">Semua kapanewon</option>
+              <option>Girimulyo</option><option>Kalibawang</option><option>Samigaluh</option>
+            </select>
+          </label>
+          <label class="field grow">
+            <span class="lbl">Urutkan</span>
+            <select id="fSort">
+              <option value="nama">Nama (A–Z)</option>
+              <option value="ulasan">Ulasan terbanyak</option>
+              <option value="rating">Rating tertinggi</option>
+            </select>
+          </label>
+        </div>
+        <label class="check"><input type="checkbox" id="fLuar"> Tampilkan objek di sekitar wilayah kajian <span class="muted" id="nLuar"></span></label>
+        <p class="count" id="listCount"></p>
+        <ul class="dlist" id="dlist"></ul>
+      </section>
+
+      <!-- ============================== REKOMENDASI -->
+      <section class="tabpane active" id="tab-rekom" role="tabpanel">
+        <div class="kriteria-card" id="kriteriaCard">
+          <div class="kc-head">
+            <span class="eyebrow">Kriteria perjalanan Anda</span>
+            <button type="button" class="link" id="btnWizard2">Ubah lewat panduan</button>
+          </div>
+          <dl class="kc-list" id="kriteriaList"><div><dt>Status</dt><dd>Belum diisi — jawab 5 pertanyaan panduan terlebih dahulu.</dd></div></dl>
+        </div>
+        <details class="manual" id="manualWrap">
+        <summary>Atur kriteria secara manual &amp; bobot</summary>
+        <form id="fRekom" novalidate>
+          <fieldset class="step">
+            <legend><span class="num">1</span> Lokasi awal perjalanan</legend>
+            <div class="btnrow">
+              <button type="button" class="btn" id="btnGps">Gunakan lokasi saya</button>
+              <button type="button" class="btn" id="btnPick">Pilih pada peta</button>
+            </div>
+            <div class="row search-row">
+              <input type="search" id="geoQ" placeholder="Masukkan lokasi, mis. Stasiun Wates" autocomplete="off">
+              <button type="button" class="btn" id="btnGeo">Cari</button>
+            </div>
+            <ul class="georesults" id="geoRes"></ul>
+            <div class="presets">Contoh:
+              <button type="button" class="link" data-preset="tugu">Tugu Yogyakarta</button> ·
+              <button type="button" class="link" data-preset="gerbosari">Gerbosari (pusat Samigaluh)</button>
+            </div>
+            <p class="origin" id="originInfo">Belum ada titik awal.</p>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend><span class="num">2</span> Jenis wisata</legend>
+            <div class="chips multi" id="rKat"></div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend><span class="num">3</span> Waktu tersedia <small>(termasuk perjalanan)</small></legend>
+            <div class="row">
+              <label class="field grow"><span class="sr-only">Durasi jam</span>
+                <div class="suffix"><input type="number" id="jam" min="1" max="24" step="0.5" value="6"><span>jam</span></div>
+              </label>
+              <label class="check"><input type="checkbox" id="jamFree"> Tidak dibatasi</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend><span class="num">4</span> Kelas biaya <small>(tiket masuk/orang; boleh lebih dari satu)</small></legend>
+            <div class="chips multi" id="rBiaya"></div>
+          </fieldset>
+
+          <fieldset class="step">
+            <legend><span class="num">5</span> Kelas rating <small>(boleh lebih dari satu)</small></legend>
+            <div class="chips multi" id="rRating"></div>
+          </fieldset>
+          <details class="adv" id="adv">
+            <summary>Bobot kriteria &amp; pengaturan lanjutan</summary>
+            <p class="hint">Bobot bawaan berasal dari AHP. Geser sesuai preferensi; bobot dinormalisasi otomatis sehingga jumlahnya 100%.</p>
+            <div class="presetsW" id="presetsW">
+              <button type="button" class="pill" data-w="ahp">AHP bawaan</button>
+              <button type="button" class="pill" data-w="seimbang">Seimbang</button>
+              <button type="button" class="pill" data-w="dekat">Dekat</button>
+              <button type="button" class="pill" data-w="hemat">Hemat</button>
+              <button type="button" class="pill" data-w="populer">Populer</button>
+            </div>
+            <div id="sliders"></div>
+            <div class="row">
+              <label class="field grow"><span class="lbl">Maksimum destinasi dalam rute</span>
+                <select id="maksStop"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>8</option></select>
+              </label>
+            </div>
+            <label class="check"><input type="checkbox" id="pulang"> Hitung waktu kembali ke titik awal</label>
+            <label class="check"><input type="checkbox" id="sertakanLuar"> Sertakan objek di luar 3 kapanewon</label>
+            <label class="check"><input type="checkbox" id="bayes"> Koreksi rating berulasan sedikit (Bayesian, m = 50)</label>
+          </details>
+
+          <button type="submit" class="btn primary block" id="btnCari">Cari Rekomendasi</button>
+        </form>
+        </details>
+
+        <div id="hasil" class="hasil" hidden>
+          <div class="hasil-head">
+            <p id="hasilRingkas"></p>
+            <div class="subtabs" role="tablist">
+              <button type="button" class="subtab active" data-sub="rank">Peringkat</button>
+              <button type="button" class="subtab" data-sub="rute">Rute kunjungan</button>
+            </div>
+          </div>
+          <div class="subpane active" id="sub-rank">
+            <ol class="rank" id="rankList"></ol>
+            <div class="btnrow">
+              <button type="button" class="btn" id="btnCalc">Lihat perhitungan SAW</button>
+              <button type="button" class="btn" id="btnExcl">Destinasi tersaring</button>
+            </div>
+          </div>
+          <div class="subpane" id="sub-rute">
+            <div id="ruteBox"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================== METODE -->
+      <section class="tabpane" id="tab-metode" role="tabpanel">
+        <h2>Alur sistem rekomendasi</h2>
+        <ol class="flow">
+          <li><b>Input pengguna</b> — lokasi awal, jenis wisata, waktu, anggaran, rating minimum.</li>
+          <li><b>Waktu &amp; jarak tempuh</b> — dihitung pada jaringan jalan OpenStreetMap melalui OSRM.</li>
+          <li><b>Penyaringan</b> — destinasi yang melanggar batasan pengguna dikeluarkan.</li>
+          <li><b>SAW</b> — normalisasi benefit/cost lalu penjumlahan terbobot (bobot AHP atau bobot pengguna).</li>
+          <li><b>Rute</b> — 10 destinasi teratas disusun dengan <i>nearest neighbour</i> hingga batas waktu/anggaran.</li>
+        </ol>
+
+        <h2>Kriteria penilaian</h2>
+        <div class="tablewrap"><table class="tbl" id="tblKriteria"></table></div>
+
+        <h2>Kalkulator AHP</h2>
+        <p class="hint">Isi perbandingan berpasangan (skala Saaty 1–9). Untuk hasil kuesioner banyak responden, masukkan nilai rata-rata geometrisnya. Bobot hanya layak dipakai jika CR ≤ 0,10.</p>
+        <div id="ahpPairs"></div>
+        <div class="tablewrap"><table class="tbl mono" id="ahpMatrix"></table></div>
+        <div class="ahpOut" id="ahpOut"></div>
+        <div class="btnrow">
+          <button type="button" class="btn primary" id="ahpApply">Pakai sebagai bobot rekomendasi</button>
+          <button type="button" class="btn" id="ahpReset">Kembalikan matriks bawaan</button>
+        </div>
+
+        <h2>Rumus</h2>
+        <div class="formula">
+          <p><b>AHP</b> &nbsp; CI = (λ<sub>maks</sub> − n)/(n − 1), &nbsp; CR = CI/RI, &nbsp; konsisten jika CR ≤ 0,10</p>
+          <p><b>Normalisasi benefit</b> &nbsp; r<sub>ij</sub> = x<sub>ij</sub> / max<sub>i</sub>(x<sub>ij</sub>)</p>
+          <p><b>Normalisasi cost</b> &nbsp; r<sub>ij</sub> = min<sub>i</sub>(x<sub>ij</sub>) / x<sub>ij</sub></p>
+          <p><b>Nilai preferensi</b> &nbsp; V<sub>i</sub> = Σ<sub>j</sub> w<sub>j</sub> · r<sub>ij</sub></p>
+        </div>
+        <p class="hint">Catatan transformasi: biaya dikonversi ke skala 1–5 (gratis = 1; ≤ Rp5.000 = 2; ≤ Rp15.000 = 3; ≤ Rp50.000 = 4; &gt; Rp50.000 = 5) agar tiket gratis (Rp0) tetap terdefinisi pada rumus cost. Jumlah ulasan memakai ln(1 + ulasan) karena distribusinya sangat menjulur (skewness 4,7 → 0,2).</p>
+      </section>
+
+      <!-- ============================== DATA -->
+      <section class="tabpane" id="tab-data" role="tabpanel">
+        <h2>Ringkasan basis data</h2>
+        <div class="tablewrap"><table class="tbl" id="tblRekap"></table></div>
+        <h2>Kendali mutu data</h2>
+        <div class="qa" id="qaBox"></div>
+        <h2>Unduh data</h2>
+        <div class="btnrow">
+          <button type="button" class="btn" id="dlGeo">GeoJSON destinasi</button>
+          <button type="button" class="btn" id="dlCsv">CSV destinasi</button>
+        </div>
+        <p class="hint">Versi lengkap (GeoPackage untuk QGIS dan skrip SQL PostGIS) tersedia di folder <code>db/</code> proyek.</p>
+        <h2>Tabel atribut</h2>
+        <div class="tablewrap tall"><table class="tbl small" id="tblData"></table></div>
+      </section>
+
+      <!-- ============================== TENTANG -->
+      <section class="tabpane" id="tab-tentang" role="tabpanel">
+        <h2>Tentang aplikasi</h2>
+        <p>Purwarupa WebGIS untuk Proyek Rekayasa Geodesi-Geomatika <i>"Sistem Rekomendasi Destinasi dan Rute Wisata Kapanewon Girimulyo, Kalibawang, dan Samigaluh Berbasis WebGIS"</i>, Departemen Teknik Geodesi FT UGM, 2026.</p>
+        <h3>Tim</h3>
+        <ul class="plain">
+          <li>Mirdha Dhea Permata — Manajemen proyek &amp; AHP</li>
+          <li>Maulida Fi Nurrin — Data spasial &amp; jaringan jalan</li>
+          <li>Muhammad Frisky Makarim — SAW &amp; basis data</li>
+          <li>Anindya R Putri Alindita — Inventarisasi, klasifikasi &amp; administrasi</li>
+          <li>Kharisma Alawiyah — Pengembangan WebGIS</li>
+        </ul>
+        <p>Dosen pembimbing: Dr. Dedi Atunggal S.P., S.T., M.Sc.</p>
+        <h3>Sumber data</h3>
+        <ul class="plain">
+          <li>Basis data potensi wisata: ekstraksi Google Maps dan kurasi tim (88 entri awal → 83 setelah penggabungan duplikat).</li>
+          <li>Batas kapanewon/kalurahan &amp; jaringan jalan: Rupabumi Indonesia 1:25.000, Badan Informasi Geospasial.</li>
+          <li>Routing: OSRM di atas data OpenStreetMap © kontributor OpenStreetMap.</li>
+          <li>Peta dasar: OpenStreetMap, Esri World Imagery, OpenTopoMap.</li>
+        </ul>
+        <h3>Keterbatasan</h3>
+        <ul class="plain">
+          <li>Bobot AHP bawaan masih <b>penilaian sementara tim</b> dan perlu diganti dengan hasil kuesioner responden.</li>
+          <li>Rating, ulasan, harga, dan jam operasional bersumber dari data sekunder dan belum seluruhnya diverifikasi lapangan.</li>
+          <li>Durasi kunjungan per kategori masih asumsi. Waktu tempuh OSRM cenderung optimistis untuk jalan perbukitan.</li>
+          <li>Skor adalah nilai preferensi relatif terhadap kriteria dan bobot, bukan penilaian mutlak kualitas destinasi.</li>
+        </ul>
+        <p class="muted" id="buildInfo"></p>
+      </section>
+    </aside>
+
+    <div class="mapwrap">
+      <div id="map" aria-label="Peta interaktif"></div>
+      <div class="navbanner" id="navBanner" hidden>
+        <div class="nb-main">
+          <span class="nb-icon" id="nbIcon" aria-hidden="true"></span>
+          <div class="nb-text"><b id="nbDist"></b><span id="nbInstr"></span></div>
+        </div>
+        <div class="nb-sub" id="nbSub"></div>
+        <div class="nb-actions">
+          <button type="button" class="pill" id="nbFollow" aria-pressed="true">Ikuti posisi</button>
+          <button type="button" class="pill" id="nbVoice" aria-pressed="false">Suara</button>
+          <button type="button" class="pill danger" id="nbStop">Akhiri navigasi</button>
+        </div>
+      </div>
+      <div class="pickhint" id="pickHint" hidden>Klik peta untuk menentukan titik awal · <button type="button" class="link" id="pickCancel">Batal</button></div>
+    </div>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h2 id="modalTitle"></h2>
+        <button type="button" class="iconbtn" id="modalClose" aria-label="Tutup">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============================== PANDUAN AWAL (5 pertanyaan) -->
+  <div class="wizard" id="wizard" role="dialog" aria-modal="true" aria-labelledby="wzQ">
+    <div class="wz-hero">
+      <div class="wz-brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7"/><path class="gn" d="M16 3.5c3.2 3.6 8.6 9 8.6 15.4 0 5.3-3.9 8.6-8.6 8.6s-8.6-3.3-8.6-8.6C7.4 12.5 12.8 7.1 16 3.5z"/><path class="gl" d="M16 8v18M16 13l-4 4M16 13l4 4M16 18l-5 4.5M16 18l5 4.5"/></svg>
+        <span>Rekomendasi Destinasi</span>
+      </div>
+      <div class="wz-hero-text">
+        <p class="eyebrow light">Wisata Kulon Progo · Daerah Istimewa Yogyakarta</p>
+        <h2>Rencanakan perjalanan Anda di Perbukitan Menoreh</h2>
+        <ul class="wz-facts" id="wzFacts"></ul>
+      </div>
+      <!-- ornamen Jogja dibuat halus: siluet Tugu di antara perbukitan Menoreh + garis motif kawung -->
+      <svg class="wz-hills" viewBox="0 0 600 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <path d="M0 150 L70 95 L130 125 L210 60 L290 120 L350 85 L430 130 L520 70 L600 110 L600 220 L0 220Z" fill="#2b7a60" opacity=".55"/>
+        <path d="M0 175 L90 130 L170 160 L250 115 L330 165 L410 125 L500 160 L600 135 L600 220 L0 220Z" fill="#245f4c" opacity=".85"/>
+        <g fill="#f3e3b8" opacity=".92">
+          <path d="M488 196h34v-7h-5v-46l-5-9v-17h-14v17l-5 9v46h-5z"/>
+          <path d="M498 117c0-10 4-17 7-22 3 5 7 12 7 22z"/>
+          <circle cx="505" cy="91" r="3.2"/>
+        </g>
+        <path d="M0 200 L120 170 L220 192 L330 160 L450 195 L540 175 L600 188 L600 220 L0 220Z" fill="#173f33"/>
+      </svg>
+      <div class="wz-batik" aria-hidden="true"></div>      <p class="wz-inst">Proyek Rekayasa Geodesi-Geomatika · Departemen Teknik Geodesi FT UGM · 2026</p>
+    </div>
+
+    <div class="wz-main">
+      <div class="wz-top">
+        <span class="wz-step" id="wzStepLbl">Langkah 1 dari 5</span>
+        <button type="button" class="link" id="wzSkip">Lewati, jelajahi peta saja</button>
+      </div>
+      <ol class="wz-dots" id="wzDots" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+      <div class="wz-progress"><i id="wzBar"></i></div>
+
+      <h3 class="wz-q" id="wzQ" tabindex="-1"></h3>
+      <p class="wz-help" id="wzHelp"></p>
+
+      <!-- 1. lokasi -->
+      <div class="wz-pane" data-step="0">
+        <div class="btnrow">
+          <button type="button" class="btn" id="wzGps">Gunakan lokasi saya</button>
+          <div class="row grow search-row" style="margin:0">
+            <input type="search" id="wzGeoQ" placeholder="Masukkan lokasi, mis. Stasiun Wates" autocomplete="off">
+            <button type="button" class="btn" id="wzGeoBtn">Cari</button>
+          </div>
+        </div>
+        <ul class="georesults" id="wzGeoRes"></ul>
+        <div id="wzMap" class="wz-map" aria-label="Peta untuk memilih titik awal"></div>
+        <div class="presets">Atau pilih cepat:
+          <button type="button" class="link" data-wpreset="tugu">Tugu Yogyakarta</button> ·
+          <button type="button" class="link" data-wpreset="gerbosari">Gerbosari (pusat Samigaluh)</button> ·
+          <button type="button" class="link" data-wpreset="sendangsono">Gua Maria Sendangsono</button> ·
+          <button type="button" class="link" data-wpreset="mudal">Ekowisata Sungai Mudal</button>
+        </div>
+        <p class="origin" id="wzOrigin">Klik pada peta, gunakan lokasi Anda, atau cari nama tempat.</p>
+      </div>
+
+      <!-- 2. jenis wisata -->
+      <div class="wz-pane" data-step="1"><div class="wz-cards multi" id="wzKat"></div></div>
+
+      <!-- 3. waktu -->
+      <div class="wz-pane" data-step="2">
+        <div class="wz-opts" id="wzJam"></div>
+        <label class="wz-custom">Lainnya: <input type="number" id="wzJamCustom" min="0.5" max="24" step="0.5" placeholder="mis. 5"> jam</label>
+      </div>
+
+      <!-- 4. anggaran -->
+      <div class="wz-pane" data-step="3">
+        <div class="wz-opts multi" id="wzAng"></div>
+        <p class="hint">Biaya dihitung dari tiket masuk per orang (belum termasuk parkir dan makan); untuk penginapan dipakai harga paket.</p>
+      </div>
+
+      <!-- 5. rating -->
+      <div class="wz-pane" data-step="4"><div class="wz-opts multi" id="wzRating"></div></div>
+      <!-- ringkasan -->
+      <div class="wz-pane" data-step="5">
+        <dl class="kc-list big" id="wzSummary"></dl>
+        <p class="hint">Destinasi akan dinilai dengan metode AHP–SAW (waktu tempuh, biaya, rating, popularitas) dan rute disusun dengan <i>nearest neighbour</i> pada jaringan jalan.</p>
+      </div>
+
+      <div class="wz-nav">
+        <button type="button" class="btn" id="wzBack">Kembali</button>
+        <button type="button" class="btn primary" id="wzNext">Lanjut</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="data/data.js"></script>
+  <script src="data/qa.js"></script>
+  <script src="js/rekom.js"></script>
+  <script src="js/navigasi.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

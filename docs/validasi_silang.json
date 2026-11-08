@@ -1,0 +1,155 @@
+[
+ {
+  "kode": "S1",
+  "judul": "Bobot AHP bawaan, semua kategori, tanpa batasan",
+  "asal": "Gua Maria Sendangsono",
+  "n_alternatif": 70,
+  "peringkat_identik": true,
+  "selisih_V_maks": 0.0,
+  "rute_identik": true,
+  "rute": [
+   "Gua Maria Sendangsono",
+   "Agrowisata Kalisentul",
+   "Our Lady of Lourdes Catholic Church, Promasan",
+   "Waduk Mini Embung Banjaroya (Embung Tonogoro)",
+   "Ancol Bridge - Bligo (Ancol Kalibawang)"
+  ],
+  "top5": [
+   [
+    "Gua Maria Sendangsono",
+    0.9672
+   ],
+   [
+    "Our Lady of Lourdes Catholic Church, Promasan",
+    0.7216
+   ],
+   [
+    "Waduk Mini Embung Banjaroya (Embung Tonogoro)",
+    0.6985
+   ],
+   [
+    "Agrowisata Kalisentul",
+    0.692
+   ],
+   [
+    "Ancol Bridge - Bligo (Ancol Kalibawang)",
+    0.6723
+   ]
+  ],
+  "status": "IDENTIK"
+ },
+ {
+  "kode": "S2",
+  "judul": "Profil \"dekat\", Wisata Alam, 5 jam, Rp25.000",
+  "asal": "Ekowisata Sungai Mudal",
+  "n_alternatif": 37,
+  "peringkat_identik": true,
+  "selisih_V_maks": 2.220446049250313e-16,
+  "rute_identik": true,
+  "rute": [
+   "Ekowisata Sungai Mudal",
+   "Air Terjun Kembang Soka",
+   "Bukit Sebantung (Kedung Pedut Jilid II)"
+  ],
+  "top5": [
+   [
+    "Ekowisata Sungai Mudal",
+    0.8629
+   ],
+   [
+    "Air Terjun Kembang Soka",
+    0.7025
+   ],
+   [
+    "Bukit Sebantung (Kedung Pedut Jilid II)",
+    0.5503
+   ],
+   [
+    "Kedung Pedut Waterfall",
+    0.4969
+   ],
+   [
+    "Bendung Khayangan Adventure Park",
+    0.491
+   ]
+  ],
+  "status": "IDENTIK"
+ },
+ {
+  "kode": "S3",
+  "judul": "Profil \"hemat\", rating minimal 4,5",
+  "asal": "Kebun Teh Nglinggo",
+  "n_alternatif": 37,
+  "peringkat_identik": true,
+  "selisih_V_maks": 0.0,
+  "rute_identik": true,
+  "rute": [
+   "Embung Sidoharjo /Canggal",
+   "Gua Maria Watu Blencong (Dusun Boro Suci)",
+   "Desa Wisata Banjarasri",
+   "Gua Maria Sendangsono",
+   "Our Lady of Lourdes Catholic Church, Promasan"
+  ],
+  "top5": [
+   [
+    "Gua Maria Sendangsono",
+    0.8341
+   ],
+   [
+    "Gua Maria Lawangsih",
+    0.803
+   ],
+   [
+    "Our Lady of Lourdes Catholic Church, Promasan",
+    0.79
+   ],
+   [
+    "Embung Sidoharjo /Canggal",
+    0.7897
+   ],
+   [
+    "Gua Maria Watu Blencong (Dusun Boro Suci)",
+    0.7813
+   ]
+  ],
+  "status": "IDENTIK"
+ },
+ {
+  "kode": "S4",
+  "judul": "Profil \"populer\", 6 jam, kembali ke titik awal",
+  "asal": "Desa Wisata Tinalah (Dewi Tinalah - Wisata Jogja)",
+  "n_alternatif": 70,
+  "peringkat_identik": true,
+  "selisih_V_maks": 0.0,
+  "rute_identik": true,
+  "rute": [
+   "Desa Wisata Tinalah (Dewi Tinalah - Wisata Jogja)",
+   "dolaNdeso Boro",
+   "Ancol Bridge - Bligo (Ancol Kalibawang)",
+   "Waduk Mini Embung Banjaroya (Embung Tonogoro)"
+  ],
+  "top5": [
+   [
+    "Gua Maria Sendangsono",
+    0.8027
+   ],
+   [
+    "Desa Wisata Tinalah (Dewi Tinalah - Wisata Jogja)",
+    0.8005
+   ],
+   [
+    "Ekowisata Sungai Mudal",
+    0.772
+   ],
+   [
+    "Ancol Bridge - Bligo (Ancol Kalibawang)",
+    0.7418
+   ],
+   [
+    "Waduk Mini Embung Banjaroya (Embung Tonogoro)",
+    0.7313
+   ]
+  ],
+  "status": "IDENTIK"
+ }
+]
